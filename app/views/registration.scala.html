@@ -1,0 +1,51 @@
+@(title: String, userForm: Form[UserData])(implicit messages: Messages)
+@import helper._
+
+@main(title){
+<h1>Sign Up Form</h1>
+
+@if(userForm.hasGlobalErrors) {
+<ul>
+    @for(error <- userForm.globalErrors) {
+    <li>@Messages(error.messages, error.args)</li>
+    }
+</ul>
+}
+
+@helper.form(action = routes.AuthenticationController.createUserPost()){
+@helper.inputText(userForm("firstName"),
+'_label -> "First Name",
+'_showConstraints -> false)
+
+@helper.inputText(userForm("middleName"),
+'_label -> "Middle Name",
+'_showConstraints -> false)
+
+@helper.inputText(userForm("lastName"),
+'_label -> "Last Name",
+'_showConstraints -> false)
+
+@helper.inputText(userForm("age"),
+'_label -> "Age",
+'_showConstraints -> false)
+
+@helper.select(userForm("gender"), Seq("female"->"Female", "male"->"Male"),
+'_label -> "Gender",
+'_showConstraints -> false)
+
+@helper.inputText(userForm("email"),
+'_label -> "Email",
+'_showConstraints -> false)
+
+@helper.inputText(userForm("password"),
+'_label -> "Password",
+'_showConstraints -> false)
+
+@helper.inputText(userForm("confirmPassword"),
+'_label -> "Confirm Password",
+'_showConstraints -> false)
+
+<button value="submit">Submit</button>
+
+}
+}

@@ -1,0 +1,6 @@
+@(title: String)(implicit flash: Flash)
+
+@main(title){
+<h1>@flash.get("success")</h1>
+<h1>@flash.get("error")</h1>
+}

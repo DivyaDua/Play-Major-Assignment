@@ -4,10 +4,13 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /home/user                              controllers.HomeController.flashAction
-GET     /name/:name                       controllers.HomeController.startSession(name: String)
-GET     /                                  controllers.HomeController.index
-GET     /home                             controllers.HomeController.getSession
+GET     /registration               controllers.Application.showRegistrationForm
+GET     /                           controllers.Application.index
+GET     /login                      controllers.Application.showLoginPage
+POST    /home/login                  controllers.AuthenticationController.createUserLoginPost
+POST    /home           controllers.AuthenticationController.createUserPost
+GET   /profile  controllers.Application.display
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

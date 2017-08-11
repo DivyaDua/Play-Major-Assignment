@@ -1,0 +1,28 @@
+@(title: String, userLoginForm: Form[UserLoginData])(implicit messages: Messages,flash: Flash)
+@import helper._
+
+@main(title){
+<h1>Log In</h1>
+<h3>@flash.get("information")</h3>
+
+@if(userLoginForm.hasGlobalErrors) {
+<ul>
+    @for(error <- userLoginForm.globalErrors) {
+    <li>@Messages(error.messages, error.args)</li>
+    }
+</ul>
+}
+
+@helper.form(action = routes.AuthenticationController.createUserLoginPost()){
+@helper.inputText(userLoginForm("email"),
+'_label -> "Email",
+'_showConstraints -> false)
+
+@helper.inputText(userLoginForm("password"),
+'_label -> "Password",
+'_showConstraints -> false)
+
+<button value="login">LogIn</button>
+
+}
+}
