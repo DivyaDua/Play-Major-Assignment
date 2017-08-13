@@ -10,23 +10,36 @@ import play.api.mvc._
  * application's home page.
  */
 @Singleton
-class Application @Inject()(implicit val messagesApi: MessagesApi, userForms: UserForms)
+class Application @Inject()(implicit val messagesApi: MessagesApi, forms: UserForms)
   extends Controller with I18nSupport{
 
-  def index = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index())
+  def index1 = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index1())
+  }
+
+  def showOptionUserOrAdmin = Action{ implicit request: Request[AnyContent] =>
+    Ok(views.html.userOrAdmin())
+  }
+
+  def showAdminLoginPage = Action{ implicit request: Request[AnyContent] =>
+    Ok(views.html.login("Play", forms.userLoginForm))
   }
 
   def display = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.display("Play Error"))
+    Ok(views.html.display("Play"))
   }
 
-  def showRegistrationForm = Action{ implicit request: Request[AnyContent] =>
-     Ok(views.html.registration("Play", userForms.userForm))
+  def showRegistrationPage = Action{ implicit request: Request[AnyContent] =>
+     Ok(views.html.registration("Play", forms.userForm))
   }
 
   def showLoginPage = Action{ implicit request: Request[AnyContent] =>
-    Ok(views.html.login("Play", userForms.userLoginForm))
+    Ok(views.html.login("Play", forms.userLoginForm))
   }
+
+  /*def showProfile(userProfile: UserProfile) = Action{ implicit request: Request[AnyContent] =>
+    Ok(views.html.userProfile(forms.userProfileForm.fill(userProfile)))
+  }
+*/
 
 }

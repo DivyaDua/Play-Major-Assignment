@@ -1,8 +1,10 @@
-@(title: String, userForm: Form[UserData])(implicit messages: Messages)
+@(userForm: Form[UserProfile])(implicit messages: Messages, flash: Flash)
 @import helper._
 
-@main(title){
-<h1>Sign Up Form</h1>
+@main("Play"){
+<center>
+<h1>Profile</h1>
+<h2>@flash.get("success")</h2>
 
 @if(userForm.hasGlobalErrors) {
 <ul>
@@ -12,7 +14,7 @@
 </ul>
 }
 
-@helper.form(action = routes.AuthenticationController.createUserPost()){
+@helper.form(action = routes.ProfileController.updateProfile()){
 @helper.inputText(userForm("firstName"),
 '_label -> "First Name",
 '_showConstraints -> false)
@@ -41,15 +43,8 @@
 '_label -> "Email",
 '_showConstraints -> false)
 
-@helper.inputText(userForm("password"),
-'_label -> "Password",
-'_showConstraints -> false)
-
-@helper.inputText(userForm("confirmPassword"),
-'_label -> "Confirm Password",
-'_showConstraints -> false)
-
-<button value="submit">Submit</button>
+<button value="update">Update</button>
 
 }
+</center>
 }

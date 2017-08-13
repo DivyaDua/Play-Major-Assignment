@@ -1,0 +1,12 @@
+@()(implicit messages: Messages,flash: Flash)
+
+@main("Play"){
+
+<h1><center>Welcome to Knoldus!</center></h1>
+<h4><center>@flash.get("unauthorised")</center></h4>
+<center>
+    <input type="submit" onclick="location.href='@controllers.routes.Application.showLoginPage';" value="Log In" />
+    <h3>OR</h3>
+    <input type="submit" onclick="location.href='@controllers.routes.Application.showRegistrationPage';" value="Sign Up" />
+</center>
+}

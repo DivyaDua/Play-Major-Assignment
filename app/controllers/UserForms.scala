@@ -5,7 +5,23 @@ import play.api.data._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import scala.util.matching.Regex
 
-case class UserData(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, email: String, password: String, confirmPassword: String)
+case class UserData(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, email: String, password: String, confirmPassword: String)
+
+case class UserProfile(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, email: String)
+
+object UserProfile{
+  def apply(list: List[(String, Option[String], String, Int, String, Long, String)]) = {
+    val firstName = list.head._1
+    val middleName = list.head._2
+    val lastName = list.head._3
+    val age = list.head._4
+    val gender = list.head._5
+    val mobileNumber = list.head._6
+    val email = list.head._7
+
+    new UserProfile(firstName, middleName, lastName, age, gender, mobileNumber, email)
+  }
+}
 
 case class UserLoginData(email: String, password: String)
 
@@ -18,6 +34,7 @@ class UserForms {
       "lastName" -> text.verifying("Please enter last name", lastName => !lastName.isEmpty),
       "age" -> number(min = 18, max = 75),
       "gender" -> nonEmptyText,
+      "mobileNumber" -> longNumber.verifying(mobileNumberCheck()),
       "email" -> email,
       "password" -> text.verifying(passwordCheck()),
       "confirmPassword" -> text.verifying(passwordCheck())
@@ -25,6 +42,17 @@ class UserForms {
       fields => fields match {
         case user => validatePassword(user.password, user.confirmPassword)
       }))
+
+  val userProfileForm = Form(
+    mapping(
+      "firstName" -> text.verifying("Please enter first name", firstName => !firstName.isEmpty),
+      "middleName" -> optional(text),
+      "lastName" -> text.verifying("Please enter last name", lastName => !lastName.isEmpty),
+      "age" -> number(min = 18, max = 75),
+      "gender" -> nonEmptyText,
+      "mobileNumber" -> longNumber.verifying(mobileNumberCheck()),
+      "email" -> email
+    )(UserProfile.apply)(UserProfile.unapply))
 
   val userLoginForm = Form(
     mapping(
@@ -44,6 +72,20 @@ class UserForms {
         case p if p.length < 8 => Seq(ValidationError("Password is too short"))
         case allNumbers() => Seq(ValidationError("Password is all numbers"))
         case allLetters() => Seq(ValidationError("Password is all letters"))
+        case _ => Nil
+      }
+      if (errors.isEmpty) {
+        Valid
+      } else {
+        Invalid(errors)
+      }
+  }
+
+  def mobileNumberCheck(errorMessage: String = "error.mobileNumber"): Constraint[Long] = Constraint[Long]("constraint.mobileNumber") {
+    mobileNumber =>
+      val errors = mobileNumber match {
+        case p if p.toString.trim.isEmpty => Seq(ValidationError("Please enter mobile number"))
+        case p if p.toString.length != 10 => Seq(ValidationError("Mobile Number is incorrect"))
         case _ => Nil
       }
       if (errors.isEmpty) {

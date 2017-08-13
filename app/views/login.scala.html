@@ -2,18 +2,18 @@
 @import helper._
 
 @main(title){
-<h1>Log In</h1>
-<h3>@flash.get("information")</h3>
+<h1><center>Log In</center></h1>
+<h4><center>@flash.get("error")</center></h4>
 
 @if(userLoginForm.hasGlobalErrors) {
-<ul>
+<center><ul>
     @for(error <- userLoginForm.globalErrors) {
     <li>@Messages(error.messages, error.args)</li>
     }
-</ul>
+</ul></center>
 }
-
-@helper.form(action = routes.AuthenticationController.createUserLoginPost()){
+<center>
+@helper.form(action = routes.AuthenticationController.createLoginPost()){
 @helper.inputText(userLoginForm("email"),
 '_label -> "Email",
 '_showConstraints -> false)
@@ -22,7 +22,8 @@
 '_label -> "Password",
 '_showConstraints -> false)
 
-<button value="login">LogIn</button>
-
+<button name="login" value="adminLogin">LogIn As Admin</button>
+<button name="login" value="userLogin">LogIn As User</button>
 }
+</center>
 }

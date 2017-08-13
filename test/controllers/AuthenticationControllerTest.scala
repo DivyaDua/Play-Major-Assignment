@@ -28,12 +28,12 @@ class AuthenticationControllerTest extends PlaySpec with MockitoSugar with Guice
 
     "be able to create a user" in {
 
-      val user = UserData("Divya", None,  "Dua", 21, "female", "divya.dua@knoldus.in", "divyadua1", "divyadua1")
+      val user = UserData("Divya", None,  "Dua", 21, "female", 8130212805L, "divya.dua@knoldus.in", "divyadua1", "divyadua1")
       val form = new UserForms().userForm.fill(user)
       when(forms.userForm).thenReturn(form)
 
       when(userDataRepository.findByEmail("divya.dua@knoldus.in")).thenReturn(Future(None))
-      when(userDataRepository.store(UserDataModel(0, "Divya", None, "Dua", 21, "female", "divya.dua@knoldus.in", "divyadua1")))
+      when(userDataRepository.store(UserDataModel(0, "Divya", None, "Dua", 21, "female", 8130212805L,"divya.dua@knoldus.in", "divyadua1")))
         .thenReturn(Future(true))
 
       val result = call(authenticationController.createUserPost(),FakeRequest(POST,"/home").withFormUrlEncodedBody(
