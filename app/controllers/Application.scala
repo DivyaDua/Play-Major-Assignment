@@ -2,15 +2,14 @@ package controllers
 
 import javax.inject._
 
+import models.HobbiesRepository
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
+import scala.concurrent.ExecutionContext.Implicits.global
 
-/**
- * This controller creates an `Action` to handle HTTP requests to the
- * application's home page.
- */
 @Singleton
-class Application @Inject()(implicit val messagesApi: MessagesApi, forms: UserForms)
+class Application @Inject()(implicit val messagesApi: MessagesApi, forms: UserForms,
+                            hobbiesRepository: HobbiesRepository)
   extends Controller with I18nSupport{
 
   def index1 = Action { implicit request: Request[AnyContent] =>
@@ -29,8 +28,8 @@ class Application @Inject()(implicit val messagesApi: MessagesApi, forms: UserFo
     Ok(views.html.display("Play"))
   }
 
-  def showRegistrationPage = Action{ implicit request: Request[AnyContent] =>
-     Ok(views.html.registration("Play", forms.userForm))
+  def showRegistrationPage = Action.async{ implicit request: Request[AnyContent] =>
+     hobbiesRepository.retrieveHobbies.map{hobbies => Ok(views.html.registration("Play", forms.userForm, hobbies))}
   }
 
   def showLoginPage = Action{ implicit request: Request[AnyContent] =>

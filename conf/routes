@@ -16,8 +16,8 @@ GET    /retrieveProfile             controllers.ProfileController.showUserProfil
 POST    /updateProfile             controllers.ProfileController.updateProfile
 
 POST    /home/login                 controllers.AuthenticationController.createLoginPost
-GET    /home/adminLogin                 controllers.AuthenticationController.adminLogin
-GET    /home/userLogin                 controllers.AuthenticationController.userLogin
+#GET    /home/adminLogin                 controllers.AuthenticationController.adminLogin
+#GET    /home/userLogin                 controllers.AuthenticationController.userLogin
 
 POST    /home                       controllers.AuthenticationController.createUserPost
 

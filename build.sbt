@@ -16,6 +16,7 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % Test,
   "com.h2database" % "h2" % "1.4.188",
   "org.mockito" % "mockito-all" % "1.9.5" % "test",
+  "org.mindrot" % "jbcrypt" % "0.4",
   evolutions
 )
 

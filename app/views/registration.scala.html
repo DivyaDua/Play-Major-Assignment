@@ -1,4 +1,4 @@
-@(title: String, userForm: Form[UserData])(implicit messages: Messages)
+@(title: String, userForm: Form[UserData], hobbies: List[String])(implicit messages: Messages)
 @import helper._
 
 @main(title){
@@ -37,15 +37,19 @@
 '_label -> "Mobile Number",
 '_showConstraints -> false)
 
+@inputCheckboxGroup(userForm("hobbies"),
+options = hobbies.map(e => e->e),
+'_label -> "Hobbies")
+
 @helper.inputText(userForm("email"),
 '_label -> "Email",
 '_showConstraints -> false)
 
-@helper.inputText(userForm("password"),
+@helper.inputPassword(userForm("password"),
 '_label -> "Password",
 '_showConstraints -> false)
 
-@helper.inputText(userForm("confirmPassword"),
+@helper.inputPassword(userForm("confirmPassword"),
 '_label -> "Confirm Password",
 '_showConstraints -> false)
 

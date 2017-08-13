@@ -5,11 +5,13 @@ import play.api.data._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import scala.util.matching.Regex
 
-case class UserData(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, email: String, password: String, confirmPassword: String)
+case class UserData(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, hobbies: List[String], email: String, password: String, confirmPassword: String)
 
-case class UserProfile(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, email: String)
+case class UserProfile(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, hobbies: List[String], email: String)
 
-object UserProfile{
+case class UserProfileData(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, email: String)
+
+object UserProfileData{
   def apply(list: List[(String, Option[String], String, Int, String, Long, String)]) = {
     val firstName = list.head._1
     val middleName = list.head._2
@@ -19,11 +21,28 @@ object UserProfile{
     val mobileNumber = list.head._6
     val email = list.head._7
 
-    new UserProfile(firstName, middleName, lastName, age, gender, mobileNumber, email)
+    new UserProfileData(firstName, middleName, lastName, age, gender, mobileNumber, email)
+  }
+}
+
+object UserProfile{
+  def apply(userProfileData: UserProfileData, hobbiesSeq: Seq[String]) = {
+    val firstName = userProfileData.firstName
+    val middleName = userProfileData.middleName
+    val lastName = userProfileData.lastName
+    val age = userProfileData.age
+    val gender = userProfileData.gender
+    val mobileNumber = userProfileData.mobileNumber
+    val email = userProfileData.email
+
+    val hobbies = hobbiesSeq.toList
+    new UserProfile(firstName, middleName, lastName, age, gender, mobileNumber, hobbies, email)
   }
 }
 
 case class UserLoginData(email: String, password: String)
+
+case class Hobbies()
 
 class UserForms {
 
@@ -35,6 +54,7 @@ class UserForms {
       "age" -> number(min = 18, max = 75),
       "gender" -> nonEmptyText,
       "mobileNumber" -> longNumber.verifying(mobileNumberCheck()),
+      "hobbies" -> list(text).verifying("Select one or more hobbies", hobbies => hobbies.nonEmpty),
       "email" -> email,
       "password" -> text.verifying(passwordCheck()),
       "confirmPassword" -> text.verifying(passwordCheck())
@@ -51,6 +71,7 @@ class UserForms {
       "age" -> number(min = 18, max = 75),
       "gender" -> nonEmptyText,
       "mobileNumber" -> longNumber.verifying(mobileNumberCheck()),
+      "hobbies" -> list(text),
       "email" -> email
     )(UserProfile.apply)(UserProfile.unapply))
 
