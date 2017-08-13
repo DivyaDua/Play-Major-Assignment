@@ -18,6 +18,7 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
                                   val messagesApi: MessagesApi)
   extends Controller with I18nSupport{
 
+  implicit val messages: MessagesApi = messagesApi
   lazy val hobbiesList: Future[List[String]] = hobbiesRepository.retrieveHobbies
 
   def showUserProfile: Action[AnyContent] = Action.async{ implicit request: Request[AnyContent] =>

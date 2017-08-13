@@ -11,15 +11,17 @@ GET     /admin/login                controllers.Application.showAdminLoginPage
 GET     /login                      controllers.Application.showLoginPage
 #GET     /profile                    controllers.Application.showProfile
 GET     /display                    controllers.Application.display
+GET     /forgotPasswordPage         controllers.Application.showForgotPasswordPage
 
 GET    /retrieveProfile             controllers.ProfileController.showUserProfile
 POST    /updateProfile             controllers.ProfileController.updateProfile
 
 POST    /home/login                 controllers.AuthenticationController.createLoginPost
-#GET    /home/adminLogin                 controllers.AuthenticationController.adminLogin
-#GET    /home/userLogin                 controllers.AuthenticationController.userLogin
-
 POST    /home                       controllers.AuthenticationController.createUserPost
+
+POST    /forgotPassword             controllers.PasswordUpdateController.updatePassword
+
+
 
 
 # Map static resources from the /public folder to the /assets URL path

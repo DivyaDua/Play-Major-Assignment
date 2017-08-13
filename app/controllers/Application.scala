@@ -8,9 +8,11 @@ import play.api.mvc._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Singleton
-class Application @Inject()(implicit val messagesApi: MessagesApi, forms: UserForms,
+class Application @Inject()(val messagesApi: MessagesApi, forms: UserForms,
                             hobbiesRepository: HobbiesRepository)
   extends Controller with I18nSupport{
+
+  implicit val messages: MessagesApi = messagesApi
 
   def index1 = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index1())
@@ -33,7 +35,12 @@ class Application @Inject()(implicit val messagesApi: MessagesApi, forms: UserFo
   }
 
   def showLoginPage = Action{ implicit request: Request[AnyContent] =>
-    Ok(views.html.login("Play", forms.userLoginForm))
+    val email = request.flash.get("email").getOrElse("")
+    Ok(views.html.login("Play", forms.userLoginForm.fill(UserLoginData(email, ""))))
+  }
+
+  def showForgotPasswordPage = Action{ implicit request: Request[AnyContent] =>
+    Ok(views.html.forgotPassword(forms.userForgotPasswordForm))
   }
 
   /*def showProfile(userProfile: UserProfile) = Action{ implicit request: Request[AnyContent] =>

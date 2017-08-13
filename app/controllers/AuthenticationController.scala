@@ -82,7 +82,7 @@ class AuthenticationController @Inject()(userDataRepository: UserDataRepository,
                   }
                 }
               case false =>  Future.successful(Redirect(routes.Application.showLoginPage())
-                .flashing("error" -> "Incorrect Password"))
+                .flashing("email" -> loginData.email,"error" -> "Incorrect Password"))
             }
           case false => Future.successful(Redirect(routes.Application.index1())
             .flashing("unauthorised" -> "Email does not match, register first"))

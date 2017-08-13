@@ -42,7 +42,7 @@ object UserProfile{
 
 case class UserLoginData(email: String, password: String)
 
-case class Hobbies()
+case class UserForgotPasswordData(email: String, newPassword: String, confirmPassword: String)
 
 class UserForms {
 
@@ -81,6 +81,18 @@ class UserForms {
       "password" -> text.verifying(passwordCheck())
     )(UserLoginData.apply)(UserLoginData.unapply)
   )
+
+  val userForgotPasswordForm = Form(
+    mapping(
+      "email" -> email,
+      "newPassword" -> text.verifying(passwordCheck()),
+      "confirmPassword" -> text.verifying(passwordCheck())
+    )(UserForgotPasswordData.apply)(UserForgotPasswordData.unapply).verifying("Password & confirm password do not match",
+      fields => fields match {
+        case user => validatePassword(user.newPassword, user.confirmPassword)
+      })
+  )
+
   val allNumbers: Regex = """\d*""".r
   val allLetters: Regex = """[A-Za-z]*""".r
 

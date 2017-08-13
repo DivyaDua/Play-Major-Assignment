@@ -42,6 +42,11 @@ class UserDataRepository @Inject()(protected val dbConfigProvider: DatabaseConfi
     }
   }
 
+  def updatePassword(email: String, password: String): Future[Boolean] = {
+    val query = userDataTable.filter(_.email === email).map(e => e.password).update(password)
+    db.run(query).map(_ > 0)
+  }
+
   def checkIsAdmin(email: String): Future[Boolean] = {
     val query = userDataTable.filter(_.email === email).map(_.isAdmin).result.headOption
     db.run(query).map{
