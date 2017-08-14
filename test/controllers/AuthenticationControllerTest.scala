@@ -16,7 +16,7 @@ import scala.concurrent.{Await, Future}
 
 class AuthenticationControllerTest extends PlaySpec with MockitoSugar with GuiceOneServerPerSuite{
 
-  val forms: UserForms = mock[UserForms]
+  /*val forms: UserForms = mock[UserForms]
   val userDataRepository: UserDataRepository = mock[UserDataRepository]
   val messagesApi: MessagesApi = mock[MessagesApi]
 
@@ -43,5 +43,5 @@ class AuthenticationControllerTest extends PlaySpec with MockitoSugar with Guice
       status(result) mustBe 303
       redirectLocation(result) mustBe Some("/profile")
     }
-  }
+  }*/
 }

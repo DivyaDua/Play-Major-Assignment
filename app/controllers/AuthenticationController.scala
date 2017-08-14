@@ -39,16 +39,21 @@ class AuthenticationController @Inject()(userDataRepository: UserDataRepository,
 
             userDataRepository.store(userDataModel).flatMap {
               case true =>
+                val userId = userDataRepository.retrieveUserId(userDataModel.email)
                 val hobbiesIdList = hobbiesRepository.retrieveHobbiesID(userData.hobbies)
                 hobbiesIdList.flatMap(
                   listOfHobbyIds =>
-                    userPlusHobbiesRepository.addUserHobbies(userDataModel.email, listOfHobbyIds).map {
-                      case true => Redirect(routes.ProfileController.showUserProfile())
-                        .flashing("success" -> "You are successfully registered!")
-                        .withSession("userEmail" -> userDataModel.email)
+                    userId.flatMap{
+                      case id: Int if id > 0 =>userPlusHobbiesRepository.addUserHobbies(id, listOfHobbyIds).map {
+                        case true => Redirect(routes.ProfileController.showUserProfile())
+                          .flashing("success" -> "You are successfully registered!")
+                          .withSession("userEmail" -> userDataModel.email)
 
-                      case false => Redirect(routes.Application.display)
-                        .flashing("error" -> "Something went wrong")
+                        case false => Redirect(routes.Application.display)
+                          .flashing("error" -> "Something went wrong")
+                      }
+                      case id: Int if id == 0 => Future.successful(Redirect(routes.Application.display)
+                        .flashing("error" -> "Something went wrong"))
                     })
               case false => Future.successful(Redirect(routes.Application.display)
                 .flashing("error" -> "Something went wrong"))

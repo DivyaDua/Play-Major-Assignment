@@ -31,8 +31,9 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
           Future.successful(Ok(views.html.index1()))
 
         case userList: List[UserDataModel] =>
+
           val user = userList.head
-          userPlusHobbiesRepository.getUserHobby(userEmail).flatMap {
+          userPlusHobbiesRepository.getUserHobby(user.id).flatMap {
             case Nil =>
               Logger.info("Did not receive any hobbies for the user!")
               Future.successful(Ok(views.html.index1()))
@@ -63,6 +64,8 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
               hobbies =>  BadRequest(views.html.userProfile(formWithErrors, hobbies)))
           },
           userProfile => {
+
+            val userId = userDataRepository.retrieveUserId(email)
             val userProfileData = UserProfileData(userProfile.firstName, userProfile.middleName,
               userProfile.lastName, userProfile.age, userProfile.gender, userProfile.mobileNumber,
               userProfile.email)
@@ -72,13 +75,17 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
                 val hobbiesIdList = hobbiesRepository.retrieveHobbiesID(userProfile.hobbies)
                 hobbiesIdList.flatMap(
                   listOfHobbyIds =>
-                    userPlusHobbiesRepository.updateUserHobbies(userProfile.email, listOfHobbyIds).map {
-                      case true => Redirect(routes.ProfileController.showUserProfile())
-                        .flashing("success" -> "Your Profile is updated successfully!")
-                        .withSession("userEmail" -> userProfile.email)
+                    userId.flatMap{
+                      case id: Int if id > 0 => userPlusHobbiesRepository.updateUserHobbies(id, listOfHobbyIds).map {
+                        case true => Redirect(routes.ProfileController.showUserProfile())
+                          .flashing("success" -> "Your Profile is updated successfully!")
+                          .withSession("userEmail" -> userProfile.email)
 
-                      case false => Redirect(routes.ProfileController.showUserProfile())
-                        .flashing("error" -> "Something went wrong, Try to update again")
+                        case false => Redirect(routes.ProfileController.showUserProfile())
+                          .flashing("error" -> "Something went wrong, Try to update again")
+                      }
+                      case id: Int if id == 0 => Future.successful(Redirect(routes.ProfileController.showUserProfile())
+                        .flashing("error" -> "Something went wrong, Try to update again"))
                     })
               case false => Future.successful(Redirect(routes.ProfileController.showUserProfile())
                 .flashing("error" -> "Something went wrong, Try to update again"))

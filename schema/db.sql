@@ -28,11 +28,10 @@ INSERT INTO hobbiestable VALUES(1, 'dancing'),(2, 'listening music'),(3, 'photog
 
 CREATE TABLE IF NOT EXISTS userhobbiestable(
   id serial NOT NULL,
-  useremail VARCHAR(100) NOT NULL,
+  userid INT NOT NULL,
   hid INT NOT NULL,
   PRIMARY KEY(id)
 );
 
-INSERT INTO userhobbiestable(useremail, hid) VALUES('divyaduamzn12@gmail.com', 1),
-('divyaduamzn12@gmail.com', 3),('divyaduamzn12@gmail.com', 5);
+
 

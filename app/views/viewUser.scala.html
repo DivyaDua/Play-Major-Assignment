@@ -1,0 +1,21 @@
+@(users: List[(String, String)])(implicit messages: Messages,flash: Flash)
+@import helper._
+
+@main("Play") {
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Enable</th>
+        <th>Disable</th>
+    </tr>
+    @for(user <- users){
+    <tr>
+        <td>@user._1</td>
+        <td>@user._2</td>
+        <td><button value="enable">Enable</button></td>
+        <td><button value="disable">Disable</button></td>
+    </tr>
+    }
+</table>
+}

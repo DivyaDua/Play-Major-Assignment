@@ -17,6 +17,7 @@ libraryDependencies ++= Seq(
   "com.h2database" % "h2" % "1.4.188",
   "org.mockito" % "mockito-all" % "1.9.5" % "test",
   "org.mindrot" % "jbcrypt" % "0.4",
+  specs2 % Test,
   evolutions
 )
 

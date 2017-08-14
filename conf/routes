@@ -21,6 +21,7 @@ POST    /home                       controllers.AuthenticationController.createU
 
 POST    /forgotPassword             controllers.PasswordUpdateController.updatePassword
 
+GET    /viewUser                    controllers.ViewUserController.viewUsers
 
 
 

@@ -1,14 +1,12 @@
 package models
 
 import javax.inject.Inject
-
-import controllers.{UserProfile, UserProfileData}
+import controllers.UserProfileData
 import org.mindrot.jbcrypt.BCrypt
 import play.api.Logger
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 import slick.lifted.ProvenShape
-
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -24,6 +22,14 @@ class UserDataRepository @Inject()(protected val dbConfigProvider: DatabaseConfi
   def retrieve(email: String): Future[List[UserDataModel]] = {
     val query = userDataTable.filter(_.email === email).to[List].result
     db.run(query)
+  }
+
+  def retrieveUserId(email: String): Future[Int] = {
+    val query = userDataTable.filter(_.email === email).map(_.id).to[List].result.headOption
+    db.run(query).map{
+      case Some(id) => id
+      case None => 0
+    }
   }
 
   def updateUserProfile(userProfile: UserProfileData, email: String): Future[Boolean] = {
@@ -45,6 +51,11 @@ class UserDataRepository @Inject()(protected val dbConfigProvider: DatabaseConfi
   def updatePassword(email: String, password: String): Future[Boolean] = {
     val query = userDataTable.filter(_.email === email).map(e => e.password).update(password)
     db.run(query).map(_ > 0)
+  }
+
+  def retrieveNameAndEmail: Future[List[(String, String)]] = {
+    val query = userDataTable.filter(_.isAdmin === false).map(e => (e.firstName, e.email)).to[List].result
+    db.run(query)
   }
 
   def checkIsAdmin(email: String): Future[Boolean] = {
