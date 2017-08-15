@@ -10,7 +10,7 @@ GET     /login                      controllers.Application.showLoginPage
 GET     /forgotPasswordPage         controllers.Application.showForgotPasswordPage
 GET     /addAssignmentPage         controllers.Application.showAddAssignmentPage
 
-GET    /retrieveProfile             controllers.ProfileController.showUserProfile
+GET    /showProfile             controllers.ProfileController.showUserProfile
 POST    /updateProfile             controllers.ProfileController.updateProfile
 
 POST    /home/login                 controllers.LoginController.createLoginPost

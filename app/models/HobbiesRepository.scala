@@ -17,10 +17,10 @@ class HobbiesRepository @Inject()(protected val dbConfigProvider: DatabaseConfig
     db.run(query)
   }
 
-  def retrieveHobbiesID(hobbies: List[String]): Future[List[Int]] = {
+  /*def retrieveHobbiesID(hobbies: List[String]): Future[List[Int]] = {
     val listOfFutureHobbyIds = hobbies.map(hobby => db.run(hobbiesTable.filter(_.hobby === hobby).map(_.hobbyId).to[List].result))
     Future.sequence(listOfFutureHobbyIds).map(_.flatten)
-  }
+  }*/
 
 }
 

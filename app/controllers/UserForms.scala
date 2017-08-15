@@ -25,20 +25,6 @@ object UserProfileData {
   }
 }
 
-/*object UserProfile {
-  def apply(userProfileData: UserProfileData, hobbiesSeq: Seq[String]): UserProfile = {
-    val firstName = userProfileData.firstName
-    val middleName = userProfileData.middleName
-    val lastName = userProfileData.lastName
-    val age = userProfileData.age
-    val gender = userProfileData.gender
-    val mobileNumber = userProfileData.mobileNumber
-
-    val hobbies = hobbiesSeq.toList
-    new UserProfile(firstName, middleName, lastName, age, gender, mobileNumber, hobbies)
-  }
-}*/
-
 case class UserLoginData(email: String, password: String)
 
 case class UserForgotPasswordData(email: String, newPassword: String, confirmPassword: String)

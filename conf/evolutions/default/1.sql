@@ -14,6 +14,14 @@ CREATE TABLE IF NOT EXISTS userdatatable(
   PRIMARY KEY(id, email)
 );
 
+CREATE TABLE IF NOT EXISTS assignmenttable(
+  id serial NOT NULL,
+  title VARCHAR(100) NOT NULL,
+  description VARCHAR NULL,
+  PRIMARY KEY(id)
+);
+
 # --- !Downs
 DROP TABLE userdatatable;
+DROP TABLE assignmenttable;
 

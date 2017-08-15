@@ -19,7 +19,6 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
   extends Controller with I18nSupport{
 
   implicit val messages: MessagesApi = messagesApi
-  lazy val hobbiesList: Future[List[HobbiesModel]] = hobbiesRepository.retrieveHobbies
 
   def showUserProfile: Action[AnyContent] = Action.async{ implicit request: Request[AnyContent] =>
 
@@ -28,31 +27,34 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
       case Some(userEmail) => userDataRepository.retrieve(userEmail).flatMap {
         case Nil =>
           Logger.info("Did not receive any user with given UserID! Redirecting to welcome page!")
-          Future.successful(Ok(views.html.index1()))
+          Future.successful(Redirect(routes.Application.index1())
+            .flashing("error" -> "No user found, cannot show profile"))
 
         case userList: List[UserDataModel] =>
-
           val user = userList.head
           userPlusHobbiesRepository.getUserHobby(user.id).flatMap {
             case Nil =>
-              Logger.info("Did not receive any hobbies for the user!")
-              Future.successful(Ok(views.html.index1()))
+              Logger.error("Did not receive any hobbies for the user!")
+              Future.successful(Redirect(routes.Application.index1())
+                .flashing("error" -> "Hobbies are not retrieved properly"))
             case hobbies: List[Int] =>
               Logger.info("Received list of hobbies")
               val userProfile = UserProfile(user.firstName, user.middleName, user.lastName, user.age,
                 user.gender, user.mobileNumber, hobbies)
 
-              hobbiesList.map( userHobbies =>
+              hobbiesRepository.retrieveHobbies.map( userHobbies =>
                 Ok(views.html.userProfile(forms.userProfileForm.fill(userProfile), userHobbies, user.isAdmin))
               )
           }
       }
-      case None => Future.successful(Redirect(routes.Application.index1())
+      case None =>
+        Logger.error("Cannot show profile")
+        Future.successful(Redirect(routes.Application.index1())
         .flashing("unauthorised" -> "You need to log in first!"))
     }
   }
 
-  def updateProfile: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def updateProfile(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
 
     val email = request.session.get("userEmail")
     val bool = request.session.get("isAdmin").getOrElse("false").toBoolean
@@ -60,31 +62,42 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
       case Some(email) =>
         forms.userProfileForm.bindFromRequest.fold(
           formWithErrors => {
+            Logger.error("Bad Request " + formWithErrors)
               hobbiesRepository.retrieveHobbies.map(
                 hobbies =>  BadRequest(views.html.userProfile(formWithErrors, hobbies, bool)))
           },
           userProfile => {
-            val userId = userDataRepository.retrieveUserId(email)
             val userProfileData = UserProfileData(userProfile.firstName, userProfile.middleName,
               userProfile.lastName, userProfile.age, userProfile.gender, userProfile.mobileNumber)
 
             userDataRepository.updateUserProfile(userProfileData, email).flatMap {
-              case true =>
-                userId.flatMap{
-                      case id: Int if id > 0 => userPlusHobbiesRepository.updateUserHobbies(id, userProfile.hobbies).map {
-                        case true => Redirect(routes.ProfileController.showUserProfile())
+              case true => Logger.info("Updated user data table")
+                userDataRepository.retrieveUserId(email).flatMap{
+                      case id: Int if id > 0 =>
+                        Logger.info(s"Retrieved id for user with email $email")
+                        userPlusHobbiesRepository.updateUserHobbies(id, userProfile.hobbies).map {
+                        case true =>
+                          Logger.info("Updated hobbies of user")
+                          Redirect(routes.ProfileController.showUserProfile())
                           .flashing("success" -> "Your Profile is updated successfully!")
 
-                        case false => Redirect(routes.ProfileController.showUserProfile())
+                        case false =>
+                          Logger.error("Failed to update hobbies of user")
+                          Redirect(routes.ProfileController.showUserProfile())
                           .flashing("error" -> "Something went wrong, Try to update again")
                       }
-                      case 0 => Future.successful(Redirect(routes.ProfileController.showUserProfile())
+                      case _ =>
+                        Logger.error(s"No user with email $email exists, hence can't retrieve its id")
+                        Future.successful(Redirect(routes.ProfileController.showUserProfile())
                         .flashing("error" -> "Something went wrong, Try to update again"))
                     }
-              case false => Future.successful(Redirect(routes.ProfileController.showUserProfile())
+              case false => Logger.error("Failed to update user data table")
+                Future.successful(Redirect(routes.ProfileController.showUserProfile())
                 .flashing("error" -> "Something went wrong, Try to update again"))
             }})
-      case None => Future.successful(Redirect(routes.Application.index1())
+      case None =>
+        Logger.error("User is not in session")
+        Future.successful(Redirect(routes.Application.index1())
         .flashing("unauthorised" -> "You need to log in first!"))
     }
   }
