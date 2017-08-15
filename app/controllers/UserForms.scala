@@ -5,9 +5,10 @@ import play.api.data._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import scala.util.matching.Regex
 
-case class UserData(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, hobbies: List[String], email: String, password: String, confirmPassword: String)
+case class UserData(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String,
+                    mobileNumber: Long, hobbies: List[String], email: String, password: String, confirmPassword: String)
 
-case class UserProfile(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, hobbies: List[String])
+case class UserProfile(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, hobbies: List[Int])
 
 case class UserProfileData(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long)
 
@@ -24,7 +25,7 @@ object UserProfileData {
   }
 }
 
-object UserProfile {
+/*object UserProfile {
   def apply(userProfileData: UserProfileData, hobbiesSeq: Seq[String]): UserProfile = {
     val firstName = userProfileData.firstName
     val middleName = userProfileData.middleName
@@ -36,7 +37,7 @@ object UserProfile {
     val hobbies = hobbiesSeq.toList
     new UserProfile(firstName, middleName, lastName, age, gender, mobileNumber, hobbies)
   }
-}
+}*/
 
 case class UserLoginData(email: String, password: String)
 
@@ -44,12 +45,15 @@ case class UserForgotPasswordData(email: String, newPassword: String, confirmPas
 
 class UserForms {
 
+  val MAX = 75
+  val MIN = 18
+
   val userForm = Form(
     mapping(
       "firstName" -> text.verifying("Please enter first name", firstName => !firstName.isEmpty),
       "middleName" -> optional(text),
       "lastName" -> text.verifying("Please enter last name", lastName => !lastName.isEmpty),
-      "age" -> number(min = 18, max = 75),
+      "age" -> number(MIN, MAX),
       "gender" -> nonEmptyText,
       "mobileNumber" -> longNumber.verifying(mobileNumberCheck()),
       "hobbies" -> list(text).verifying("Select one or more hobbies", hobbies => hobbies.nonEmpty),
@@ -66,10 +70,10 @@ class UserForms {
       "firstName" -> text.verifying("Please enter first name", firstName => !firstName.isEmpty),
       "middleName" -> optional(text),
       "lastName" -> text.verifying("Please enter last name", lastName => !lastName.isEmpty),
-      "age" -> number(min = 18, max = 75),
+      "age" -> number(MIN, MAX),
       "gender" -> nonEmptyText,
       "mobileNumber" -> longNumber.verifying(mobileNumberCheck()),
-      "hobbies" -> list(text).verifying("Select one or more hobbies", hobbies => hobbies.nonEmpty)
+      "hobbies" -> list(number).verifying("Select one or more hobbies", hobbies => hobbies.nonEmpty)
     )(UserProfile.apply)(UserProfile.unapply))
 
   val userLoginForm = Form(

@@ -31,10 +31,10 @@ class UserPlusHobbiesRepository @Inject()(protected val dbConfigProvider: Databa
     addUserHobbies(uid, hobbiesIdList)
   }
 
-  def getUserHobby(uid: Int): Future[List[String]] = {
-    val userAndHobbyJoin: QueryBase[Seq[(Int, String)]] = for{
+  def getUserHobby(uid: Int): Future[List[Int]] = {
+    val userAndHobbyJoin: QueryBase[Seq[(Int, Int)]] = for{
       (user,hobby) <- userHobbiesTable join hobbiesTable on (_.hobbyId === _.hobbyId)
-    } yield (user.userId, hobby.hobby)
+    } yield (user.userId, hobby.hobbyId)
 
     val queryBase = userAndHobbyJoin.result
     db.run(queryBase).map(userAndHobby => userAndHobby.filter(_._1 == uid).map(_._2).toList)

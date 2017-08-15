@@ -12,8 +12,8 @@ case class HobbiesModel(hobbyId: Int, hobby: String)
 class HobbiesRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HobbiesRepositoryTable{
 
   import driver.api._
-  def retrieveHobbies: Future[List[String]] = {
-    val query = hobbiesTable.map(_.hobby).to[List].result
+  def retrieveHobbies: Future[List[HobbiesModel]] = {
+    val query = hobbiesTable.to[List].result
     db.run(query)
   }
 

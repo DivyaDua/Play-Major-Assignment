@@ -1,4 +1,4 @@
-@(userForm: Form[UserProfile], hobbiesList: List[String], isAdmin: Boolean)(implicit messages: Messages, flash: Flash)
+@(userForm: Form[UserProfile], hobbiesList: List[HobbiesModel], isAdmin: Boolean)(implicit messages: Messages, flash: Flash)
 @import helper._
 
 @main("Play"){
@@ -43,7 +43,7 @@
     '_showConstraints -> false)
 
     @inputCheckboxGroup(userForm("hobbies"),
-    options = hobbiesList.map(e => e->e),
+    options = hobbiesList.map(e => e.hobbyId.toString->e.hobby),
     '_label -> "Hobbies",
     '_error -> userForm("hobbies").error.map(_.withMessage("select one or more hobbies")))
 

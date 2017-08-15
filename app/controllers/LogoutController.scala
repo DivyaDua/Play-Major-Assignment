@@ -30,3 +30,4 @@ class LogoutController @Inject()(userDataRepository: UserDataRepository,
   }
 
 }
+

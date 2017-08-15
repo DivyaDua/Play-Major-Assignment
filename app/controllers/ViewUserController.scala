@@ -21,7 +21,7 @@ class ViewUserController @Inject()(userDataRepository: UserDataRepository,
       case Some(adminEmail) => userDataRepository.retrieveAllUsers.map {
         case Nil =>
           Logger.info("Did not receive any user with given UserID! Redirecting to welcome page!")
-          Ok(views.html.index1())
+          Redirect(routes.Application.index1()).flashing("error" -> "No Users Found")
         case user: List[UserDataModel] =>
           Logger.info("Displaying All Users with enable & disable buttons")
           Ok(views.html.viewUser(user))

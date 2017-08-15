@@ -6,13 +6,12 @@ import models.{AssignmentModel, AssignmentRepository, UserDataRepository}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Controller, Request}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class HandleAssignmentController @Inject()(userDataRepository: UserDataRepository,
                                            assignmentRepository: AssignmentRepository,
-                                           form: AssignmentForm,
+                                           forms: AssignmentForm,
                                            val messagesApi: MessagesApi)
   extends Controller with I18nSupport {
 
@@ -28,19 +27,24 @@ class HandleAssignmentController @Inject()(userDataRepository: UserDataRepositor
           Redirect(routes.AssignmentController.viewAssignment())
           .flashing("status" -> "Assignment Deleted!")
 
-        case false => Redirect(routes.AssignmentController.viewAssignment())
+        case false =>
+          Logger.error(s"Assignment with $id does not exist, hence cannot delete assignment")
+          Redirect(routes.AssignmentController.viewAssignment())
           .flashing("status" -> "Something went wrong!")
       }
-      case None => Future.successful(Redirect(routes.Application.index1())
+      case None =>
+        Logger.error("Admin is not in the session, hence cannot delete assignment")
+        Future.successful(Redirect(routes.Application.index1())
         .flashing("unauthorised" -> "You need to log in first!"))
     }
   }
 
-  def addAssignment: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def addAssignment(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     val email = request.session.get("userEmail")
     email match {
-      case Some(userEmail) => form.assignmentForm.bindFromRequest.fold(
+      case Some(userEmail) => forms.assignmentForm.bindFromRequest.fold(
         formWithErrors => {
+          Logger.error("Bad requuest" + formWithErrors)
           Future.successful(BadRequest(views.html.addAssignment(formWithErrors)))
         },
         assignmentData => {

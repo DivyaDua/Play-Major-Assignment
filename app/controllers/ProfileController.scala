@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject._
 
-import models.{HobbiesRepository, UserDataModel, UserDataRepository, UserPlusHobbiesRepository}
+import models._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Logger
@@ -19,7 +19,7 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
   extends Controller with I18nSupport{
 
   implicit val messages: MessagesApi = messagesApi
-  lazy val hobbiesList: Future[List[String]] = hobbiesRepository.retrieveHobbies
+  lazy val hobbiesList: Future[List[HobbiesModel]] = hobbiesRepository.retrieveHobbies
 
   def showUserProfile: Action[AnyContent] = Action.async{ implicit request: Request[AnyContent] =>
 
@@ -37,13 +37,13 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
             case Nil =>
               Logger.info("Did not receive any hobbies for the user!")
               Future.successful(Ok(views.html.index1()))
-            case hobbies: List[String] =>
+            case hobbies: List[Int] =>
               Logger.info("Received list of hobbies")
               val userProfile = UserProfile(user.firstName, user.middleName, user.lastName, user.age,
                 user.gender, user.mobileNumber, hobbies)
 
-              hobbiesList.map( hobbies =>
-                Ok(views.html.userProfile(forms.userProfileForm.fill(userProfile), hobbies, user.isAdmin))
+              hobbiesList.map( userHobbies =>
+                Ok(views.html.userProfile(forms.userProfileForm.fill(userProfile), userHobbies, user.isAdmin))
               )
           }
       }
@@ -55,17 +55,13 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
   def updateProfile: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
 
     val email = request.session.get("userEmail")
+    val bool = request.session.get("isAdmin").getOrElse("false").toBoolean
     email match {
       case Some(email) =>
         forms.userProfileForm.bindFromRequest.fold(
           formWithErrors => {
-            userDataRepository.checkIsAdmin(email).flatMap{
-              case Some(bool) => hobbiesRepository.retrieveHobbies.map(
+              hobbiesRepository.retrieveHobbies.map(
                 hobbies =>  BadRequest(views.html.userProfile(formWithErrors, hobbies, bool)))
-
-              case None => Future.successful(Redirect(routes.Application.index1())
-                .flashing("error" -> "You are not a valid user!"))
-            }
           },
           userProfile => {
             val userId = userDataRepository.retrieveUserId(email)
@@ -74,20 +70,17 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
 
             userDataRepository.updateUserProfile(userProfileData, email).flatMap {
               case true =>
-                val hobbiesIdList = hobbiesRepository.retrieveHobbiesID(userProfile.hobbies)
-                hobbiesIdList.flatMap(
-                  listOfHobbyIds =>
-                    userId.flatMap{
-                      case id: Int if id > 0 => userPlusHobbiesRepository.updateUserHobbies(id, listOfHobbyIds).map {
+                userId.flatMap{
+                      case id: Int if id > 0 => userPlusHobbiesRepository.updateUserHobbies(id, userProfile.hobbies).map {
                         case true => Redirect(routes.ProfileController.showUserProfile())
                           .flashing("success" -> "Your Profile is updated successfully!")
 
                         case false => Redirect(routes.ProfileController.showUserProfile())
                           .flashing("error" -> "Something went wrong, Try to update again")
                       }
-                      case id: Int if id == 0 => Future.successful(Redirect(routes.ProfileController.showUserProfile())
+                      case 0 => Future.successful(Redirect(routes.ProfileController.showUserProfile())
                         .flashing("error" -> "Something went wrong, Try to update again"))
-                    })
+                    }
               case false => Future.successful(Redirect(routes.ProfileController.showUserProfile())
                 .flashing("error" -> "Something went wrong, Try to update again"))
             }})

@@ -13,17 +13,17 @@ GET     /addAssignmentPage         controllers.Application.showAddAssignmentPage
 GET    /retrieveProfile             controllers.ProfileController.showUserProfile
 POST    /updateProfile             controllers.ProfileController.updateProfile
 
-POST    /home/login                 controllers.AuthenticationController.createLoginPost
+POST    /home/login                 controllers.LoginController.createLoginPost
 POST    /home                       controllers.AuthenticationController.createUserPost
 
-POST    /forgotPassword             controllers.PasswordUpdateController.updatePassword
+POST   /forgotPassword             controllers.PasswordUpdateController.updatePassword
 
 GET    /viewUser                    controllers.ViewUserController.viewUsers
 
 GET    /enableUser                 controllers.EnableDisableController.enableUser(name: String, email:String)
 GET    /disableUser                controllers.EnableDisableController.disableUser(name: String, email:String)
 
-POST    /addAssignment                controllers.HandleAssignmentController.addAssignment
+POST   /addAssignment                controllers.HandleAssignmentController.addAssignment
 GET    /deleteAssignment                controllers.HandleAssignmentController.deleteAssignment(id: Int)
 GET    /viewAssignment                controllers.AssignmentController.viewAssignment
 

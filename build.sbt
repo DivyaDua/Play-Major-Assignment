@@ -15,7 +15,7 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "42.1.4",
   "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % Test,
   "com.h2database" % "h2" % "1.4.188",
-  "org.mockito" % "mockito-all" % "1.9.5" % "test",
+  "org.mockito" % "mockito-core" % "2.8.47" % "test",
   "org.mindrot" % "jbcrypt" % "0.4",
   specs2 % Test,
   evolutions

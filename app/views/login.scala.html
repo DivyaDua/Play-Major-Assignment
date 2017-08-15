@@ -15,7 +15,7 @@
 </ul></center>
 }
 <center>
-@helper.form(action = routes.AuthenticationController.createLoginPost()){
+@helper.form(action = routes.LoginController.createLoginPost()){
 @helper.inputText(userLoginForm("email"),
 '_label -> "Email",
 '_showConstraints -> false)

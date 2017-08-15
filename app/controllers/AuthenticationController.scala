@@ -41,13 +41,10 @@ class AuthenticationController @Inject()(userDataRepository: UserDataRepository,
             userDataRepository.store(userDataModel).flatMap {
               case true =>
                 Logger.info("User information is stored in user data table")
-                val hobbiesIdList = hobbiesRepository.retrieveHobbiesID(userData.hobbies)
-                hobbiesIdList.flatMap(
-                  listOfHobbyIds =>
-                    userDataRepository.retrieveUserId(userDataModel.email).flatMap{
+                userDataRepository.retrieveUserId(userDataModel.email).flatMap{
                       case id: Int if id > 0 =>
                         Logger.info("User Id is retrieved")
-                        userPlusHobbiesRepository.addUserHobbies(id, listOfHobbyIds).map {
+                        userPlusHobbiesRepository.addUserHobbies(id, userData.hobbies.map(_.toInt)).map {
                         case true =>
                           Logger.info("Hobbies added")
                           Redirect(routes.ProfileController.showUserProfile())
@@ -59,11 +56,11 @@ class AuthenticationController @Inject()(userDataRepository: UserDataRepository,
                           Redirect(routes.Application.index1())
                           .flashing("error" -> "Something went wrong")
                       }
-                      case id: Int if id == 0 =>
+                      case _ =>
                         Logger.error("No such user exists, hence cannot retrieve the ID")
                         Future.successful(Redirect(routes.Application.index1())
                         .flashing("error" -> "No such user exists"))
-                    })
+                    }
               case false =>
                 Logger.info("User information cannot be stored in user data table")
                 Future.successful(Redirect(routes.Application.index1())
@@ -72,43 +69,5 @@ class AuthenticationController @Inject()(userDataRepository: UserDataRepository,
         }
       })
   }
-
-  def createLoginPost: Action[AnyContent] = Action.async{ implicit request: Request[AnyContent] =>
-      forms.userLoginForm.bindFromRequest.fold(
-        formWithErrors => {
-          Future.successful(BadRequest(views.html.login("Play", formWithErrors)))
-        },
-        loginData => userDataRepository.findByEmail(loginData.email).flatMap{
-          case true =>
-            userDataRepository.validatePassword(loginData.email, loginData.password).flatMap{
-              case true =>
-                userDataRepository.checkIsAdmin(loginData.email).flatMap{
-                  case Some(bool) if bool=> Future.successful(Redirect(routes.ProfileController.showUserProfile())
-                    .flashing("success" -> "You are successfully logged in!")
-                    .withSession("userEmail" -> loginData.email))
-
-                  case Some(bool) if !bool =>
-                    userDataRepository.checkIsEnabled(loginData.email).map{
-                    case Some(value) if value => Redirect(routes.ProfileController.showUserProfile())
-                      .flashing("success" -> "You are successfully logged in!")
-                      .withSession("userEmail" -> loginData.email)
-
-                    case Some(value) if !value => Redirect(routes.Application.index1())
-                      .flashing("unauthorised" -> "You are being disabled")
-
-                    case None => Redirect(routes.Application.index1())
-                      .flashing("unauthorised" -> "Email does not match, register first")
-                  }
-                  case None => Future.successful(Redirect(routes.Application.index1())
-                    .flashing("unauthorised" -> "Email does not match, register first"))
-                }
-              case false =>  Future.successful(Redirect(routes.Application.showLoginPage())
-                .flashing("email" -> loginData.email,"error" -> "Incorrect Password"))
-            }
-          case false => Future.successful(Redirect(routes.Application.index1())
-            .flashing("unauthorised" -> "Email does not match, register first"))
-        }
-      )
-    }
 
 }

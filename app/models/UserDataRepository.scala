@@ -10,7 +10,10 @@ import slick.lifted.ProvenShape
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class UserDataModel(id: Int, firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, email: String, password: String, isEnabled: Boolean = true, isAdmin: Boolean = false)
+case class UserDataModel(id: Int, firstName: String, middleName: Option[String],
+                         lastName: String, age: Int, gender: String, mobileNumber: Long,
+                         email: String, password: String, isEnabled: Boolean = true,
+                         isAdmin: Boolean = false)
 
 class UserDataRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends UserDataRepositoryTable {
 

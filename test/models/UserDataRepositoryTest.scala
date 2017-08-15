@@ -7,11 +7,13 @@ import org.scalatestplus.play.PlaySpec
 
 class UserDataRepositoryTest extends PlaySpec with MockitoSugar {
 
-  private val userDataModel1 = UserDataModel(0,"DivyaTest", None, "Dua", 21, "female", 8130212805L, "divya.dua@knoldus.in",
+  val TWENTY_ONE = 21
+  val NUMBER = 8130212805L
+  private val userDataModel1 = UserDataModel(0,"DivyaTest", None, "Dua", TWENTY_ONE, "female", NUMBER, "divya.dua@knoldus.in",
     "divya12345", true, true)
-  private val userDataModel2 = UserDataModel(0,"NehaTest", None, "Dua", 20, "female", 8130212806L, "neha.dua@knoldus.in",
+  private val userDataModel2 = UserDataModel(0,"NehaTest", None, "Dua", TWENTY_ONE, "female", NUMBER, "neha.dua@knoldus.in",
     "neha12345", false, false)
-  private val userDataModel3 = UserDataModel(0,"ShrutiTest", None, "Gupta", 21, "female", 8130212807L, "shruti.gupta@knoldus.in",
+  private val userDataModel3 = UserDataModel(0,"ShrutiTest", None, "Gupta", TWENTY_ONE, "female", NUMBER, "shruti.gupta@knoldus.in",
     "shruti12345", true, false)
 
   val userDataRepositoryModel = new ModelsTest[UserDataRepository]
@@ -30,8 +32,8 @@ class UserDataRepositoryTest extends PlaySpec with MockitoSugar {
 
     "be able to retrieve user information for a given email" in {
       val retrieveResult = userDataRepositoryModel.result(userDataRepositoryModel.repository.retrieve("divya.dua@knoldus.in"))
-      retrieveResult must equal(List(UserDataModel(1,"DivyaTest",None,"Dua",21,"female",
-        8130212805L,"divya.dua@knoldus.in","divya12345",true,true)))
+      retrieveResult must equal(List(UserDataModel(1,"DivyaTest",None,"Dua",TWENTY_ONE,"female",
+        NUMBER,"divya.dua@knoldus.in","divya12345",true,true)))
     }
 
     "not be able to retrieve any user information for invalid email" in {
@@ -50,13 +52,13 @@ class UserDataRepositoryTest extends PlaySpec with MockitoSugar {
     }
 
     "be able to update user information for a given email" in {
-      val userProfileData = UserProfileData("Divya", None, "Dua", 21, "female", 9997931352L)
+      val userProfileData = UserProfileData("Divya", None, "Dua", TWENTY_ONE, "female", NUMBER)
       val updatedResult = userDataRepositoryModel.result(userDataRepositoryModel.repository.updateUserProfile(userProfileData, "divya.dua@knoldus.in"))
       updatedResult must equal(true)
     }
 
     "not be able to update user information for invalid email" in {
-      val userProfileData = UserProfileData("Divya", None, "Dua", 21, "female", 9997931352L)
+      val userProfileData = UserProfileData("Divya", None, "Dua", TWENTY_ONE, "female", NUMBER)
       val updatedResult = userDataRepositoryModel.result(userDataRepositoryModel.repository.updateUserProfile(userProfileData, "divya@knoldus.in"))
       updatedResult must equal(false)
     }
@@ -123,10 +125,9 @@ class UserDataRepositoryTest extends PlaySpec with MockitoSugar {
 
     "be able to retrieve all users who are not admin" in {
       val result = userDataRepositoryModel.result(userDataRepositoryModel.repository.retrieveAllUsers)
-      result must equal(List(UserDataModel(3,"ShrutiTest", None, "Gupta", 21, "female", 8130212807L, "shruti.gupta@knoldus.in",
-        "shruti12345", true, false),
-        UserDataModel(2,"NehaTest",None,"Dua",20,"female",
-        8130212806L,"neha.dua@knoldus.in","nehadua12345",false,false)))
+      result must equal(List(UserDataModel(3,"ShrutiTest", None, "Gupta", TWENTY_ONE, "female", NUMBER, "shruti.gupta@knoldus.in",
+        "shruti12345", true, false),UserDataModel(2,"NehaTest",None,"Dua",TWENTY_ONE,"female",
+          NUMBER,"neha.dua@knoldus.in","nehadua12345",false,false)))
     }
 
   }
