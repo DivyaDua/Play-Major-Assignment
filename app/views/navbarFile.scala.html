@@ -8,10 +8,21 @@
             <a class="navbar-brand">Play</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
-
-            <li id="profile"><a href='@controllers.routes.ProfileController.showUserProfile'>User Profile</a></li>
-            <li id="view"><a href='@controllers.routes.AssignmentController.viewAssignment'>View Assignment</a></li>
-            <li id="logout"><a href='@controllers.routes.LogoutController.logout'>Logout</a></li>
+            @if(activeTab == "profile"){
+            <li class="active"><a href='@controllers.routes.ProfileController.showUserProfile'>User Profile</a></li>
+            <li><a href='@controllers.routes.AssignmentController.viewAssignment'>View Assignment</a></li>
+            <li><a href='@controllers.routes.LogoutController.logout'>Logout</a></li>
+            }else { @if(activeTab == "viewAssignment"){
+            <li><a href='@controllers.routes.ProfileController.showUserProfile'>User Profile</a></li>
+            <li class="active"><a href='@controllers.routes.AssignmentController.viewAssignment'>View Assignment</a>
+            </li>
+            <li><a href='@controllers.routes.LogoutController.logout'>Logout</a></li>
+            }else{
+            <li><a href='@controllers.routes.ProfileController.showUserProfile'>User Profile</a></li>
+            <li ><a href='@controllers.routes.AssignmentController.viewAssignment'>View Assignment</a>
+            </li>
+            <li class="active"><a href='@controllers.routes.LogoutController.logout'>Logout</a></li>
+            }}
         </ul>
     </div>
 </nav>
@@ -22,11 +33,37 @@
             <a class="navbar-brand">Play</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li class="{% if(activeTab == 'profile') %}active{% endif %}"><a href='@controllers.routes.ProfileController.showUserProfile'>User Profile</a></li>
-            <li ><a href='@controllers.routes.AssignmentController.viewAssignment'>View Assignment</a></li>
-            <li ><a href='@controllers.routes.Application.showAddAssignmentPage'>Add Assignment</a></li>
-            <li ><a href='@controllers.routes.ViewUserController.viewUsers'>View Users</a></li>
-            <li ><a href='@controllers.routes.LogoutController.logout'>Logout</a></li>
+            @if(activeTab == "profile"){
+            <li class="active"><a href='@controllers.routes.ProfileController.showUserProfile'>User Profile</a></li>
+            <li><a href='@controllers.routes.AssignmentController.viewAssignment'>View Assignment</a></li>
+            <li><a href='@controllers.routes.Application.showAddAssignmentPage'>Add Assignment</a></li>
+            <li><a href='@controllers.routes.ViewUserController.viewUsers'>View Users</a></li>
+            <li><a href='@controllers.routes.LogoutController.logout'>Logout</a></li>
+            }else{ @if(activeTab == "viewAssignment"){
+            <li><a href='@controllers.routes.ProfileController.showUserProfile'>User Profile</a></li>
+            <li class="active"><a href='@controllers.routes.AssignmentController.viewAssignment'>View Assignment</a></li>
+            <li><a href='@controllers.routes.Application.showAddAssignmentPage'>Add Assignment</a></li>
+            <li><a href='@controllers.routes.ViewUserController.viewUsers'>View Users</a></li>
+            <li><a href='@controllers.routes.LogoutController.logout'>Logout</a></li>
+            }else{ @if(activeTab == "add"){
+            <li><a href='@controllers.routes.ProfileController.showUserProfile'>User Profile</a></li>
+            <li><a href='@controllers.routes.AssignmentController.viewAssignment'>View Assignment</a></li>
+            <li class="active"><a href='@controllers.routes.Application.showAddAssignmentPage'>Add Assignment</a></li>
+            <li><a href='@controllers.routes.ViewUserController.viewUsers'>View Users</a></li>
+            <li><a href='@controllers.routes.LogoutController.logout'>Logout</a></li>
+            }else{ @if(activeTab == "viewUser"){
+            <li><a href='@controllers.routes.ProfileController.showUserProfile'>User Profile</a></li>
+            <li><a href='@controllers.routes.AssignmentController.viewAssignment'>View Assignment</a></li>
+            <li><a href='@controllers.routes.Application.showAddAssignmentPage'>Add Assignment</a></li>
+            <li class="active"><a href='@controllers.routes.ViewUserController.viewUsers'>View Users</a></li>
+            <li><a href='@controllers.routes.LogoutController.logout'>Logout</a></li>
+            }else{
+            <li><a href='@controllers.routes.ProfileController.showUserProfile'>User Profile</a></li>
+            <li><a href='@controllers.routes.AssignmentController.viewAssignment'>View Assignment</a></li>
+            <li><a href='@controllers.routes.Application.showAddAssignmentPage'>Add Assignment</a></li>
+            <li><a href='@controllers.routes.ViewUserController.viewUsers'>View Users</a></li>
+            <li class="active"><a href='@controllers.routes.LogoutController.logout'>Logout</a></li>
+            }}}}
         </ul>
     </div>
 </nav>
