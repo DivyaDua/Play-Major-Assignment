@@ -9,6 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Singleton
 class Application @Inject()(val messagesApi: MessagesApi, forms: UserForms,
+                            assignmentForm: AssignmentForm,
                             hobbiesRepository: HobbiesRepository)
   extends Controller with I18nSupport{
 
@@ -16,18 +17,6 @@ class Application @Inject()(val messagesApi: MessagesApi, forms: UserForms,
 
   def index1 = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index1())
-  }
-
-  def showOptionUserOrAdmin = Action{ implicit request: Request[AnyContent] =>
-    Ok(views.html.userOrAdmin())
-  }
-
-  def showAdminLoginPage = Action{ implicit request: Request[AnyContent] =>
-    Ok(views.html.login("Play", forms.userLoginForm))
-  }
-
-  def display = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.display("Play"))
   }
 
   def showRegistrationPage = Action.async{ implicit request: Request[AnyContent] =>
@@ -43,9 +32,8 @@ class Application @Inject()(val messagesApi: MessagesApi, forms: UserForms,
     Ok(views.html.forgotPassword(forms.userForgotPasswordForm))
   }
 
-  /*def showProfile(userProfile: UserProfile) = Action{ implicit request: Request[AnyContent] =>
-    Ok(views.html.userProfile(forms.userProfileForm.fill(userProfile)))
+  def showAddAssignmentPage = Action{ implicit request: Request[AnyContent] =>
+    Ok(views.html.addAssignment(assignmentForm.assignmentForm))
   }
-*/
 
 }

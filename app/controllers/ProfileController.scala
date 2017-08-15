@@ -38,16 +38,15 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
               Logger.info("Did not receive any hobbies for the user!")
               Future.successful(Ok(views.html.index1()))
             case hobbies: List[String] =>
-              Logger.info("Recieved list of hobbies")
+              Logger.info("Received list of hobbies")
               val userProfile = UserProfile(user.firstName, user.middleName, user.lastName, user.age,
-                user.gender, user.mobileNumber, hobbies, user.email)
+                user.gender, user.mobileNumber, hobbies)
 
               hobbiesList.map( hobbies =>
-                Ok(views.html.userProfile(forms.userProfileForm.fill(userProfile), hobbies))
+                Ok(views.html.userProfile(forms.userProfileForm.fill(userProfile), hobbies, user.isAdmin))
               )
           }
       }
-
       case None => Future.successful(Redirect(routes.Application.index1())
         .flashing("unauthorised" -> "You need to log in first!"))
     }
@@ -60,15 +59,18 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
       case Some(email) =>
         forms.userProfileForm.bindFromRequest.fold(
           formWithErrors => {
-            hobbiesRepository.retrieveHobbies.map(
-              hobbies =>  BadRequest(views.html.userProfile(formWithErrors, hobbies)))
+            userDataRepository.checkIsAdmin(email).flatMap{
+              case Some(bool) => hobbiesRepository.retrieveHobbies.map(
+                hobbies =>  BadRequest(views.html.userProfile(formWithErrors, hobbies, bool)))
+
+              case None => Future.successful(Redirect(routes.Application.index1())
+                .flashing("error" -> "You are not a valid user!"))
+            }
           },
           userProfile => {
-
             val userId = userDataRepository.retrieveUserId(email)
             val userProfileData = UserProfileData(userProfile.firstName, userProfile.middleName,
-              userProfile.lastName, userProfile.age, userProfile.gender, userProfile.mobileNumber,
-              userProfile.email)
+              userProfile.lastName, userProfile.age, userProfile.gender, userProfile.mobileNumber)
 
             userDataRepository.updateUserProfile(userProfileData, email).flatMap {
               case true =>
@@ -79,7 +81,6 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
                       case id: Int if id > 0 => userPlusHobbiesRepository.updateUserHobbies(id, listOfHobbyIds).map {
                         case true => Redirect(routes.ProfileController.showUserProfile())
                           .flashing("success" -> "Your Profile is updated successfully!")
-                          .withSession("userEmail" -> userProfile.email)
 
                         case false => Redirect(routes.ProfileController.showUserProfile())
                           .flashing("error" -> "Something went wrong, Try to update again")
@@ -90,7 +91,8 @@ class ProfileController @Inject()(userDataRepository: UserDataRepository,
               case false => Future.successful(Redirect(routes.ProfileController.showUserProfile())
                 .flashing("error" -> "Something went wrong, Try to update again"))
             }})
-      case None => Future.successful(Redirect(routes.Application.index1()).flashing("unauthorised" -> "You need to log in first!"))
+      case None => Future.successful(Redirect(routes.Application.index1())
+        .flashing("unauthorised" -> "You need to log in first!"))
     }
   }
 

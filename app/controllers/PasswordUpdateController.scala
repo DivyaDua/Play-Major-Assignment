@@ -27,17 +27,27 @@ class PasswordUpdateController @Inject()(userDataRepository: UserDataRepository,
       userForgotPasswordData => {
         userDataRepository.findByEmail(userForgotPasswordData.email).flatMap{
           case true =>
-            val hashedPassword = BCrypt.hashpw(userForgotPasswordData.newPassword, BCrypt.gensalt())
-            Logger.info("Updating Password")
+          userDataRepository.checkIsEnabled(userForgotPasswordData.email).flatMap{
+            case Some(bool) if bool =>
+              val hashedPassword = BCrypt.hashpw(userForgotPasswordData.newPassword, BCrypt.gensalt())
+              Logger.info("Updating Password")
 
-            userDataRepository.updatePassword(userForgotPasswordData.email, hashedPassword).map{
-              case true => Redirect(routes.Application.showLoginPage())
-                .flashing("" -> "Password Updated, You can now login")
+              userDataRepository.updatePassword(userForgotPasswordData.email, hashedPassword).map{
+                case true => Redirect(routes.Application.showLoginPage())
+                  .flashing("success" -> "Password Updated, You can now login")
 
-              case false => Logger.error("Failed to update password")
-                Redirect(routes.Application.showForgotPasswordPage())
-                  .flashing("error" -> "Something went wrong, try again")
-            }
+                case false => Logger.error("Failed to update password")
+                  Redirect(routes.Application.showForgotPasswordPage())
+                    .flashing("error" -> "Something went wrong, try again")
+              }
+            case Some(bool) if !bool => Logger.error("User is disabled, hence can't update password")
+              Future.successful(Redirect(routes.Application.index1())
+                .flashing("unauthorised" -> "You are disabled, hence can't update password"))
+
+            case None => Future.successful(Redirect(routes.Application.index1())
+              .flashing("unauthorised" -> "You are not a registered user, Please Register!"))
+          }
+
           case false =>
             Logger.error("Email does not match while trying to update password")
             Future.successful(Redirect(routes.Application.index1())

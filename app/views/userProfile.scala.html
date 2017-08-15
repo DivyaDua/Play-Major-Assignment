@@ -1,7 +1,9 @@
-@(userForm: Form[UserProfile], hobbiesList: List[String])(implicit messages: Messages, flash: Flash)
+@(userForm: Form[UserProfile], hobbiesList: List[String], isAdmin: Boolean)(implicit messages: Messages, flash: Flash)
 @import helper._
 
 @main("Play"){
+@navbarFile(isAdmin, "profile")
+
 <center>
     <h1>Profile</h1>
     <h4>@flash.get("success")</h4>
@@ -45,14 +47,8 @@
     '_label -> "Hobbies",
     '_error -> userForm("hobbies").error.map(_.withMessage("select one or more hobbies")))
 
-    @helper.inputText(userForm("email"),
-    '_label -> "Email",
-    '_showConstraints -> false)
-
     <button value="update">Update</button>
 
     }
-    <input type="submit" onclick="location.href='@controllers.routes.ViewUserController.viewUsers';" value="View Users" />
-
 </center>
 }

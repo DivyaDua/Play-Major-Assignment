@@ -1,0 +1,25 @@
+@(assignments: List[AssignmentModel])(implicit messages: Messages,flash: Flash)
+@import helper._
+
+@main("Play") {
+@navbarFile(true, "viewAssignment")
+<center>
+<h1>Assignment Details</h1>
+<h4>@flash.get("status")</h4>
+<table class="table-striped table-bordered" width="1000">
+    <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Delete Assignment</th>
+    </tr>
+    @for(assignment <- assignments){
+    <tr>
+        <td>@assignment.title</td>
+        <td>@assignment.description</td>
+        <td><button name="delete" onclick="location.href='@controllers.routes.HandleAssignmentController.deleteAssignment(assignment.id)';">Delete</button></td>
+    </tr>
+    }
+</table>
+<input type="submit" onclick="location.href='@controllers.routes.Application.showAddAssignmentPage';" value="Add Assignment" />
+</center>
+}

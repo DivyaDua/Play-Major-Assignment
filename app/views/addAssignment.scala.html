@@ -1,0 +1,23 @@
+@(assignmentForm: Form[Assignment])(implicit messages: Messages,flash: Flash)
+@import helper._
+
+@main("Play"){
+@navbarFile(true, "add")
+<h1><center>Assignment Details </center></h1>
+<h4><center>@flash.get("error")</center></h4>
+<h4><center>@flash.get("success")</center></h4>
+
+<center>
+    @helper.form(action = routes.HandleAssignmentController.addAssignment()){
+    @helper.inputText(assignmentForm("title"),
+    '_label -> "Title",
+    '_showConstraints -> false)
+
+    @helper.inputText(assignmentForm("description"),
+    '_label -> "Description",
+    '_showConstraints -> false)
+
+    <button name="add">Add</button>
+    }
+</center>
+}

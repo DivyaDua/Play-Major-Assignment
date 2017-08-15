@@ -4,6 +4,8 @@
 @main(title){
 <h1><center>Log In</center></h1>
 <h4><center>@flash.get("error")</center></h4>
+<h4><center>@flash.get("success")</center></h4>
+
 
 @if(userLoginForm.hasGlobalErrors) {
 <center><ul>

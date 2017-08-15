@@ -7,36 +7,34 @@ import scala.util.matching.Regex
 
 case class UserData(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, hobbies: List[String], email: String, password: String, confirmPassword: String)
 
-case class UserProfile(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, hobbies: List[String], email: String)
+case class UserProfile(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, hobbies: List[String])
 
-case class UserProfileData(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long, email: String)
+case class UserProfileData(firstName: String, middleName: Option[String], lastName: String, age: Int, gender: String, mobileNumber: Long)
 
-object UserProfileData{
-  def apply(list: List[(String, Option[String], String, Int, String, Long, String)]) = {
+object UserProfileData {
+  def apply(list: List[(String, Option[String], String, Int, String, Long)]): UserProfileData = {
     val firstName = list.head._1
     val middleName = list.head._2
     val lastName = list.head._3
     val age = list.head._4
     val gender = list.head._5
     val mobileNumber = list.head._6
-    val email = list.head._7
 
-    new UserProfileData(firstName, middleName, lastName, age, gender, mobileNumber, email)
+    new UserProfileData(firstName, middleName, lastName, age, gender, mobileNumber)
   }
 }
 
-object UserProfile{
-  def apply(userProfileData: UserProfileData, hobbiesSeq: Seq[String]) = {
+object UserProfile {
+  def apply(userProfileData: UserProfileData, hobbiesSeq: Seq[String]): UserProfile = {
     val firstName = userProfileData.firstName
     val middleName = userProfileData.middleName
     val lastName = userProfileData.lastName
     val age = userProfileData.age
     val gender = userProfileData.gender
     val mobileNumber = userProfileData.mobileNumber
-    val email = userProfileData.email
 
     val hobbies = hobbiesSeq.toList
-    new UserProfile(firstName, middleName, lastName, age, gender, mobileNumber, hobbies, email)
+    new UserProfile(firstName, middleName, lastName, age, gender, mobileNumber, hobbies)
   }
 }
 
@@ -71,8 +69,7 @@ class UserForms {
       "age" -> number(min = 18, max = 75),
       "gender" -> nonEmptyText,
       "mobileNumber" -> longNumber.verifying(mobileNumberCheck()),
-      "hobbies" -> list(text),
-      "email" -> email
+      "hobbies" -> list(text).verifying("Select one or more hobbies", hobbies => hobbies.nonEmpty)
     )(UserProfile.apply)(UserProfile.unapply))
 
   val userLoginForm = Form(

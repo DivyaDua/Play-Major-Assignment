@@ -1,21 +1,29 @@
-@(users: List[(String, String)])(implicit messages: Messages,flash: Flash)
+@(users: List[UserDataModel])(implicit messages: Messages,flash: Flash)
 @import helper._
 
 @main("Play") {
-<table>
+@navbarFile(true, "viewUser")
+<center>
+<h1>User Details</h1>
+<h4>@flash.get("status")</h4>
+<table class="table-striped table-bordered" width="1000">
     <tr>
         <th>Name</th>
-        <th>Email</th>
         <th>Enable</th>
         <th>Disable</th>
     </tr>
     @for(user <- users){
     <tr>
-        <td>@user._1</td>
-        <td>@user._2</td>
-        <td><button value="enable">Enable</button></td>
-        <td><button value="disable">Disable</button></td>
+        <td>@user.firstName @user.lastName</td>
+        @if(user.isEnabled){
+        <td><button disabled>Enable</button></td>
+        <td><button name="disable" onclick="location.href='@controllers.routes.EnableDisableController.disableUser(user.firstName, user.email)';">Disable</button></td>
+        }else{
+        <td><button name="enable" onclick="location.href='@controllers.routes.EnableDisableController.enableUser(user.firstName, user.email)';">Enable</button></td>
+        <td><button disabled>Disable</button></td>
+        }
     </tr>
     }
 </table>
+</center>
 }

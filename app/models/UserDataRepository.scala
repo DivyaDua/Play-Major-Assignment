@@ -16,10 +16,12 @@ class UserDataRepository @Inject()(protected val dbConfigProvider: DatabaseConfi
 
   import driver.api._
   def store(userDataModel: UserDataModel): Future[Boolean] = {
+    Logger.info("Storing user information in User Data Table")
     db.run(userDataTable += userDataModel).map(_ > 0)
   }
 
   def retrieve(email: String): Future[List[UserDataModel]] = {
+    Logger.info("Retrieving user information")
     val query = userDataTable.filter(_.email === email).to[List].result
     db.run(query)
   }
@@ -34,18 +36,24 @@ class UserDataRepository @Inject()(protected val dbConfigProvider: DatabaseConfi
 
   def updateUserProfile(userProfile: UserProfileData, email: String): Future[Boolean] = {
     val query = userDataTable.filter(_.email === email).map(e => (e.firstName, e.middleName, e.lastName,
-      e.age, e.gender, e.mobileNumber, e.email)).update(userProfile.firstName, userProfile.middleName,
-      userProfile.lastName, userProfile.age, userProfile.gender, userProfile.mobileNumber, userProfile.email)
+      e.age, e.gender, e.mobileNumber)).update(userProfile.firstName, userProfile.middleName,
+      userProfile.lastName, userProfile.age, userProfile.gender, userProfile.mobileNumber)
     db.run(query).map(_ > 0)
   }
 
-  def checkIsEnabled(email: String): Future[Boolean] = {
+  def checkIsEnabled(email: String): Future[Option[Boolean]] = {
     val query = userDataTable.filter(_.email === email).map(_.isEnabled).result.headOption
-    db.run(query).map{
-      case Some(bool) if bool => true
-      case Some(bool) if !bool => false
-      case None => false
-    }
+    db.run(query)
+  }
+
+  def enableUser(email: String): Future[Boolean] = {
+    val query = userDataTable.filter(_.email === email).map(_.isEnabled).update(true)
+    db.run(query).map(_ > 0)
+  }
+
+  def disableUser(email: String): Future[Boolean] = {
+    val query = userDataTable.filter(_.email === email).map(_.isEnabled).update(false)
+    db.run(query).map(_ > 0)
   }
 
   def updatePassword(email: String, password: String): Future[Boolean] = {
@@ -53,18 +61,14 @@ class UserDataRepository @Inject()(protected val dbConfigProvider: DatabaseConfi
     db.run(query).map(_ > 0)
   }
 
-  def retrieveNameAndEmail: Future[List[(String, String)]] = {
-    val query = userDataTable.filter(_.isAdmin === false).map(e => (e.firstName, e.email)).to[List].result
+  def retrieveAllUsers: Future[List[UserDataModel]] = {
+    val query = userDataTable.filter(_.isAdmin === false).to[List].result
     db.run(query)
   }
 
-  def checkIsAdmin(email: String): Future[Boolean] = {
+  def checkIsAdmin(email: String): Future[Option[Boolean]] = {
     val query = userDataTable.filter(_.email === email).map(_.isAdmin).result.headOption
-    db.run(query).map{
-      case Some(bool) if bool => true
-      case Some(bool) if !bool => false
-      case None => false
-    }
+    db.run(query)
   }
 
   def findByEmail(email: String): Future[Boolean] = {

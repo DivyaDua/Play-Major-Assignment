@@ -1,0 +1,33 @@
+@(isAdmin: Boolean, activeTab: String)
+
+
+@if(!isAdmin){
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand">Play</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+
+            <li id="profile"><a href='@controllers.routes.ProfileController.showUserProfile'>User Profile</a></li>
+            <li id="view"><a href='@controllers.routes.AssignmentController.viewAssignment'>View Assignment</a></li>
+            <li id="logout"><a href='@controllers.routes.LogoutController.logout'>Logout</a></li>
+        </ul>
+    </div>
+</nav>
+}else{
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand">Play</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li class="{% if(activeTab == 'profile') %}active{% endif %}"><a href='@controllers.routes.ProfileController.showUserProfile'>User Profile</a></li>
+            <li ><a href='@controllers.routes.AssignmentController.viewAssignment'>View Assignment</a></li>
+            <li ><a href='@controllers.routes.Application.showAddAssignmentPage'>Add Assignment</a></li>
+            <li ><a href='@controllers.routes.ViewUserController.viewUsers'>View Users</a></li>
+            <li ><a href='@controllers.routes.LogoutController.logout'>Logout</a></li>
+        </ul>
+    </div>
+</nav>
+}

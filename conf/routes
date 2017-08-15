@@ -6,12 +6,9 @@
 # An example controller showing a sample home page
 GET     /registration               controllers.Application.showRegistrationPage
 GET     /                           controllers.Application.index1
-GET     /adminOrUser                controllers.Application.showOptionUserOrAdmin
-GET     /admin/login                controllers.Application.showAdminLoginPage
 GET     /login                      controllers.Application.showLoginPage
-#GET     /profile                    controllers.Application.showProfile
-GET     /display                    controllers.Application.display
 GET     /forgotPasswordPage         controllers.Application.showForgotPasswordPage
+GET     /addAssignmentPage         controllers.Application.showAddAssignmentPage
 
 GET    /retrieveProfile             controllers.ProfileController.showUserProfile
 POST    /updateProfile             controllers.ProfileController.updateProfile
@@ -23,6 +20,14 @@ POST    /forgotPassword             controllers.PasswordUpdateController.updateP
 
 GET    /viewUser                    controllers.ViewUserController.viewUsers
 
+GET    /enableUser                 controllers.EnableDisableController.enableUser(name: String, email:String)
+GET    /disableUser                controllers.EnableDisableController.disableUser(name: String, email:String)
+
+POST    /addAssignment                controllers.HandleAssignmentController.addAssignment
+GET    /deleteAssignment                controllers.HandleAssignmentController.deleteAssignment(id: Int)
+GET    /viewAssignment                controllers.AssignmentController.viewAssignment
+
+GET    /logout                 controllers.LogoutController.logout
 
 
 # Map static resources from the /public folder to the /assets URL path

@@ -33,29 +33,40 @@ class AuthenticationController @Inject()(userDataRepository: UserDataRepository,
               .flashing("error" -> "Email already exists, Please Log In"))
 
           case false =>
+            Logger.info("Email is unique, hence trying to add user information in database")
             val hashedPassword = BCrypt.hashpw(userData.password, BCrypt.gensalt())
             val userDataModel = UserDataModel(0, userData.firstName, userData.middleName, userData.lastName, userData.age,
               userData.gender, userData.mobileNumber, userData.email, hashedPassword)
 
             userDataRepository.store(userDataModel).flatMap {
               case true =>
-                val userId = userDataRepository.retrieveUserId(userDataModel.email)
+                Logger.info("User information is stored in user data table")
                 val hobbiesIdList = hobbiesRepository.retrieveHobbiesID(userData.hobbies)
                 hobbiesIdList.flatMap(
                   listOfHobbyIds =>
-                    userId.flatMap{
-                      case id: Int if id > 0 =>userPlusHobbiesRepository.addUserHobbies(id, listOfHobbyIds).map {
-                        case true => Redirect(routes.ProfileController.showUserProfile())
+                    userDataRepository.retrieveUserId(userDataModel.email).flatMap{
+                      case id: Int if id > 0 =>
+                        Logger.info("User Id is retrieved")
+                        userPlusHobbiesRepository.addUserHobbies(id, listOfHobbyIds).map {
+                        case true =>
+                          Logger.info("Hobbies added")
+                          Redirect(routes.ProfileController.showUserProfile())
                           .flashing("success" -> "You are successfully registered!")
                           .withSession("userEmail" -> userDataModel.email)
 
-                        case false => Redirect(routes.Application.display)
+                        case false =>
+                          Logger.error("Hobbies cannot be added")
+                          Redirect(routes.Application.index1())
                           .flashing("error" -> "Something went wrong")
                       }
-                      case id: Int if id == 0 => Future.successful(Redirect(routes.Application.display)
-                        .flashing("error" -> "Something went wrong"))
+                      case id: Int if id == 0 =>
+                        Logger.error("No such user exists, hence cannot retrieve the ID")
+                        Future.successful(Redirect(routes.Application.index1())
+                        .flashing("error" -> "No such user exists"))
                     })
-              case false => Future.successful(Redirect(routes.Application.display)
+              case false =>
+                Logger.info("User information cannot be stored in user data table")
+                Future.successful(Redirect(routes.Application.index1())
                 .flashing("error" -> "Something went wrong"))
             }
         }
@@ -72,19 +83,24 @@ class AuthenticationController @Inject()(userDataRepository: UserDataRepository,
             userDataRepository.validatePassword(loginData.email, loginData.password).flatMap{
               case true =>
                 userDataRepository.checkIsAdmin(loginData.email).flatMap{
-                  case true => Future.successful(Redirect(routes.ProfileController.showUserProfile())
+                  case Some(bool) if bool=> Future.successful(Redirect(routes.ProfileController.showUserProfile())
                     .flashing("success" -> "You are successfully logged in!")
                     .withSession("userEmail" -> loginData.email))
 
-                  case false =>
+                  case Some(bool) if !bool =>
                     userDataRepository.checkIsEnabled(loginData.email).map{
-                    case true => Redirect(routes.ProfileController.showUserProfile())
+                    case Some(value) if value => Redirect(routes.ProfileController.showUserProfile())
                       .flashing("success" -> "You are successfully logged in!")
                       .withSession("userEmail" -> loginData.email)
 
-                    case false => Redirect(routes.Application.index1())
+                    case Some(value) if !value => Redirect(routes.Application.index1())
                       .flashing("unauthorised" -> "You are being disabled")
+
+                    case None => Redirect(routes.Application.index1())
+                      .flashing("unauthorised" -> "Email does not match, register first")
                   }
+                  case None => Future.successful(Redirect(routes.Application.index1())
+                    .flashing("unauthorised" -> "Email does not match, register first"))
                 }
               case false =>  Future.successful(Redirect(routes.Application.showLoginPage())
                 .flashing("email" -> loginData.email,"error" -> "Incorrect Password"))
