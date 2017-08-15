@@ -20,9 +20,6 @@ class AssignmentController @Inject()(userDataRepository: UserDataRepository,
     val email = request.session.get("userEmail")
     email match {
       case Some(userEmail) => assignmentRepository.retrieveAssignments.flatMap {
-        case Nil =>
-          Logger.info("Did not receive any user Assignment! Redirecting to welcome page!")
-          Future.successful(Ok(views.html.index1()))
         case assignmentList: List[AssignmentModel] =>
           userDataRepository.checkIsAdmin(userEmail).map{
             case Some(bool) if bool =>

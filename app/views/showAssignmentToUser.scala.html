@@ -4,18 +4,22 @@
 @main("Play") {
 @navbarFile(false, "viewAssignment")
 <center>
-<h1>Assignment Details</h1>
-<table class="table-striped table-bordered" width="1000">
-    <tr>
-        <th>Title</th>
-        <th>Description</th>
-    </tr>
-    @for(assignment <- assignments){
-    <tr>
-        <td>@assignment.title</td>
-        <td>@assignment.description</td>
-     </tr>
-    }
-</table>
+    <h1>Assignment Details</h1>
+    @if(assignments.isEmpty){
+    <h3>No Assignments found</h3>
+    }else{
+    <table class="table-striped table-bordered" width="1000">
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+        </tr>
+        @for(assignment <- assignments){
+        <tr>
+            <td>@assignment.title</td>
+            <td>@assignment.description</td>
+        </tr>
+        }
+    </table>
 </center>
+}
 }

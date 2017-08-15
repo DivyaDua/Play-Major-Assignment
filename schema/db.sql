@@ -13,10 +13,6 @@ CREATE TABLE IF NOT EXISTS userdatatable(
   PRIMARY KEY(id, email)
 );
 
-INSERT INTO userdatatable(firstname, lastname, age, gender, mobilenumber, email, password,
- isadmin) VALUES('Divya', 'Dua', 21, 'female', 8130212805, 'divyaduamzn12@gmail.com',
-   'admin123', true);
-
 CREATE TABLE IF NOT EXISTS hobbiestable(
   hid INT NOT NULL,
   hobby VARCHAR(100) NOT NULL,

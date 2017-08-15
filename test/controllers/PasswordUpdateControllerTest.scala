@@ -88,6 +88,17 @@ class PasswordUpdateControllerTest extends PlaySpec with MockitoSugar with Guice
       redirectLocation(result) mustBe Some("/")
     }
 
+    /*"not be able to update password for user who enter invalid fields" in {
+      val userForgotPasswordData = UserForgotPasswordData("divya@gmail.com", "divya1234", "divya1245")
+      val form = new UserForms().userForgotPasswordForm.fill(userForgotPasswordData)
+      when(forms.userForgotPasswordForm).thenReturn(form)
+
+      val result = call(passwordUpdateController.updatePassword(),FakeRequest(POST,"/forgotPassword")
+        .withFormUrlEncodedBody("email" -> "divya@gmail.com", "newPassword" -> "divya1234", "confirmPassword" -> "divya1245"))
+
+      status(result) mustBe 400
+    }*/
+
   }
 
 }

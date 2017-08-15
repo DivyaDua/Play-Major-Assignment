@@ -140,7 +140,7 @@ class ProfileControllerTest extends PlaySpec with MockitoSugar with GuiceOneServ
       redirectLocation(result) mustBe Some("/showProfile")
     }
 
-    "fail to update user profile data" in {
+    "fail to update user profile" in {
       val userProfile = UserProfile("Divya", None, "Dua", TWENTY_ONE, "female", NUMBER, List(ONE, FIVE))
       val form = new UserForms().userProfileForm.fill(userProfile)
       when(forms.userProfileForm).thenReturn(form)
@@ -156,7 +156,7 @@ class ProfileControllerTest extends PlaySpec with MockitoSugar with GuiceOneServ
       redirectLocation(result) mustBe Some("/showProfile")
     }
 
-    "fail to update user profile data when user is not in session" in {
+    "fail to update user profile when user is not in session" in {
       val result = call(profileController.updateProfile(),FakeRequest(POST,"/updateProfile")
         .withFormUrlEncodedBody("firstName" -> "Divya", "middleName" -> "", "lastName" -> "Dua", "age" -> "21",
           "gender" -> "female", "mobileNumber" -> "8130212805", "hobbies[0]"-> "1", "hobbies[1]" -> "5"))
@@ -164,6 +164,14 @@ class ProfileControllerTest extends PlaySpec with MockitoSugar with GuiceOneServ
       status(result) mustBe 303
       redirectLocation(result) mustBe Some("/")
     }
+
+    /*"fail to update user profile when user enters invalid data" in {
+      val result = call(profileController.updateProfile(),FakeRequest(POST,"/updateProfile")
+        .withFormUrlEncodedBody("firstName" -> "Divya", "middleName" -> "", "lastName" -> "Dua", "age" -> "21",
+          "gender" -> "female", "mobileNumber" -> "813021280", "hobbies[0]"-> "1", "hobbies[1]" -> "5"))
+
+      status(result) mustBe 400
+    }*/
   }
 
 }

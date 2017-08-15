@@ -2,12 +2,13 @@
 @import helper._
 
 @main(title){
+<div style="margin: 30px;">
 <h1>Sign Up Form</h1>
 
 @if(userForm.hasGlobalErrors) {
 <ul>
     @for(error <- userForm.globalErrors) {
-    <li>@Messages(error.messages, error.args)</li>
+    <li style="color: Red;">@Messages(error.messages, error.args)</li>
     }
 </ul>
 }
@@ -55,5 +56,5 @@ options = hobbies.map(e => e.hobbyId.toString->e.hobby),
 
 <button value="submit">Submit</button>
 
-}
+}</div>
 }

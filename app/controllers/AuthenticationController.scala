@@ -23,7 +23,7 @@ class AuthenticationController @Inject()(userDataRepository: UserDataRepository,
       formWithErrors => {
         Logger.error("Bad request " + formWithErrors)
         hobbiesRepository.retrieveHobbies.map {
-          hobbies => BadRequest(views.html.registration("Play", formWithErrors, hobbies))
+          hobbies => Ok(views.html.registration("Play", formWithErrors, hobbies))
         }
       },
       userData => {

@@ -21,7 +21,25 @@ CREATE TABLE IF NOT EXISTS assignmenttable(
   PRIMARY KEY(id)
 );
 
+CREATE TABLE IF NOT EXISTS hobbiestable(
+  hid INT NOT NULL,
+  hobby VARCHAR(100) NOT NULL,
+  PRIMARY KEY(hid)
+);
+
+INSERT INTO hobbiestable VALUES(1, 'dancing'),(2, 'listening music'),(3, 'photography'),
+  (4, 'reading novels'),(5, 'watching tv');
+
+CREATE TABLE IF NOT EXISTS userhobbiestable(
+  id serial NOT NULL,
+  userid INT NOT NULL,
+  hid INT NOT NULL,
+  PRIMARY KEY(id)
+);
+
 # --- !Downs
 DROP TABLE userdatatable;
 DROP TABLE assignmenttable;
+DROP TABLE hobbiestable;
+DROP TABLE userhobbiestable;
 

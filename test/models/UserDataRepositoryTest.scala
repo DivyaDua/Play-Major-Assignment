@@ -1,6 +1,7 @@
 package models
 
 import controllers.UserProfileData
+import org.mindrot.jbcrypt.BCrypt
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
@@ -8,12 +9,20 @@ class UserDataRepositoryTest extends PlaySpec with MockitoSugar {
 
   val TWENTY_ONE = 21
   val NUMBER = 8130212805L
+  val TRUE = true
+  val FALSE = false
+
+  val hashesPassword1: String = BCrypt.hashpw("divya12345", BCrypt.gensalt())
+  val hashesPassword2: String = BCrypt.hashpw("neha12345", BCrypt.gensalt())
+  val hashesPassword3: String = BCrypt.hashpw("shruti12345", BCrypt.gensalt())
+  val hashesPassword4: String = BCrypt.hashpw("nehadua12345", BCrypt.gensalt())
+
   private val userDataModel1 = UserDataModel(0,"DivyaTest", None, "Dua", TWENTY_ONE, "female", NUMBER, "divya.dua@knoldus.in",
-    "divya12345", true, true)
+    hashesPassword1, TRUE, TRUE)
   private val userDataModel2 = UserDataModel(0,"NehaTest", None, "Dua", TWENTY_ONE, "female", NUMBER, "neha.dua@knoldus.in",
-    "neha12345", false, false)
+    hashesPassword2, FALSE, FALSE)
   private val userDataModel3 = UserDataModel(0,"ShrutiTest", None, "Gupta", TWENTY_ONE, "female", NUMBER, "shruti.gupta@knoldus.in",
-    "shruti12345", true, false)
+    hashesPassword3, TRUE, FALSE)
 
   val userDataRepositoryModel = new ModelsTest[UserDataRepository]
 
@@ -32,7 +41,7 @@ class UserDataRepositoryTest extends PlaySpec with MockitoSugar {
     "be able to retrieve user information for a given email" in {
       val retrieveResult = userDataRepositoryModel.result(userDataRepositoryModel.repository.retrieve("divya.dua@knoldus.in"))
       retrieveResult must equal(List(UserDataModel(1,"DivyaTest",None,"Dua",TWENTY_ONE,"female",
-        NUMBER,"divya.dua@knoldus.in","divya12345",true,true)))
+        NUMBER,"divya.dua@knoldus.in",hashesPassword1,TRUE,TRUE)))
     }
 
     "not be able to retrieve any user information for invalid email" in {
@@ -93,12 +102,12 @@ class UserDataRepositoryTest extends PlaySpec with MockitoSugar {
     }
 
     "be able to update password for valid user" in {
-      val result = userDataRepositoryModel.result(userDataRepositoryModel.repository.updatePassword("neha.dua@knoldus.in", "nehadua12345"))
+      val result = userDataRepositoryModel.result(userDataRepositoryModel.repository.updatePassword("neha.dua@knoldus.in", hashesPassword4))
       result must equal(true)
     }
 
     "not be able to update password for invalid user" in {
-      val result = userDataRepositoryModel.result(userDataRepositoryModel.repository.updatePassword("neha@knoldus.in", "nehadua12345"))
+      val result = userDataRepositoryModel.result(userDataRepositoryModel.repository.updatePassword("neha@knoldus.in", hashesPassword4))
       result must equal(false)
     }
 
@@ -125,9 +134,20 @@ class UserDataRepositoryTest extends PlaySpec with MockitoSugar {
     "be able to retrieve all users who are not admin" in {
       val result = userDataRepositoryModel.result(userDataRepositoryModel.repository.retrieveAllUsers)
       result must equal(List(UserDataModel(3,"ShrutiTest", None, "Gupta", TWENTY_ONE, "female", NUMBER, "shruti.gupta@knoldus.in",
-        "shruti12345", true, false),UserDataModel(2,"NehaTest",None,"Dua",TWENTY_ONE,"female",
-          NUMBER,"neha.dua@knoldus.in","nehadua12345",false,false)))
+        hashesPassword3, TRUE, FALSE),UserDataModel(2,"NehaTest",None,"Dua",TWENTY_ONE,"female",
+          NUMBER,"neha.dua@knoldus.in",hashesPassword4,FALSE,FALSE)))
     }
+
+    "be able to validate password by returning true if it matches" in {
+      val result = userDataRepositoryModel.result(userDataRepositoryModel.repository.validatePassword("divya.dua@knoldus.in", "divya12345"))
+      result mustEqual true
+    }
+
+    "be able to validate password by returning false if it does not match" in {
+      val result = userDataRepositoryModel.result(userDataRepositoryModel.repository.validatePassword("divya.dua@knoldus.in", "divya1234"))
+      result mustEqual false
+    }
+
 
   }
 
